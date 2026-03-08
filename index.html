@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buildvision</title>
+
+  <!-- Pretendard -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+
+  <!-- daisyUI (includes Tailwind compiled utilities) -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <!-- Tailwind CDN (for config + arbitrary utilities) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Pretendard', 'sans-serif'] },
+          colors: {
+            brand: {
+              dark: '#24305E',   // 메인 딥블루
+              light: '#283593',  // 히어로 그라데이션용
+              accent: '#E65A1D'  // 주황 포인트 (버튼)
+            }
+          },
+          boxShadow: {
+            soft: '0 12px 30px rgba(17, 24, 39, .12)'
+          },
+          keyframes: {
+            floaty: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 0 rgba(230,90,29,.0)' },
+              '50%': { boxShadow: '0 0 32px rgba(230,90,29,.25)' },
+            }
+          },
+          animation: {
+            floaty: 'floaty 3.8s ease-in-out infinite',
+            pulseGlow: 'pulseGlow 2.8s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="./assets/css/custom.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
+  <link rel="shortcut icon" href="./assets/favicon/favicon.ico">
+</head>
+
+<body class="font-sans text-slate-800 bg-white">
+  <!-- Top Nav -->
+  <header class="sticky top-0 z-40 bg-white/85 backdrop-blur border-b border-slate-200">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="flex items-center justify-between h-16">
+        <a href="#home" class="flex items-center gap-3">
+          <!-- 로고 이미지 교체 -->
+          <img src="./assets/img/logo.png" alt="Buildvision" class="h-4 w-auto"
+               onerror="this.style.display='none'">
+        </a>
+
+        <nav id="siteNav" class="hidden md:flex items-center gap-2">
+          <a class="nav-link" href="#home">Home</a>
+          <a class="nav-link" href="#services">Services</a>
+          <a class="nav-link" href="#growth">Capabilities</a>
+          <a class="nav-link" href="#team">Collaboration</a>
+          <a class="nav-link" href="#contact">Contact</a>
+          <button id="openQuoteBtnTop"
+                  class="ml-2 inline-flex items-center gap-2 rounded-xl bg-brand-accent px-4 py-2 text-white font-semibold hover:opacity-95 active:opacity-90">
+            <i class="fa-regular fa-pen-to-square"></i>
+            견적요청
+          </button>
+        </nav>
+
+        <!-- Mobile -->
+        <div class="md:hidden">
+          <button class="btn btn-ghost" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="hidden pb-4 md:hidden">
+        <div class="grid gap-2">
+          <a class="nav-link" href="#home">Home</a>
+          <a class="nav-link" href="#services">Services</a>
+          <a class="nav-link" href="#team">Collaboration</a>
+          <a class="nav-link" href="#growth">Capabilities</a>
+          <a class="nav-link" href="#contact">Contact</a>
+          <button id="openQuoteBtnMobile"
+                  class="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-2 text-white font-semibold">
+            <i class="fa-regular fa-pen-to-square"></i>
+            견적요청
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Floating Event Banner -->
+<aside class="event-float">
+  <div id="eventCard"
+       class="group relative w-[300px] rounded-[28px] bg-white shadow-soft border border-slate-200 p-4 text-left">
+
+    <!-- toggle button -->
+    <button type="button" id="eventToggle"
+      class="event-toggle"
+      aria-label="이벤트 배너 접기/펼치기">
+      <i class="fa-solid fa-bullhorn"></i>
+    </button>
+
+    <!-- event open -->
+    <button type="button" id="eventOpen"
+      class="w-full text-left"
+      aria-label="이벤트 견적요청 열기">
+
+      <div id="eventContent" class="flex items-start gap-3 pr-10">
+        <div class="mt-1 h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-dark to-brand-light text-white flex items-center justify-center">
+          <i class="fa-solid fa-gift"></i> <!-- gift / ticket / tags / bolt / percent -->
+        </div>
+
+        <div class="flex-1">
+          <p class="text-xs font-bold text-brand-dark">리뉴얼 기념 선착순 EVENT</p>
+          <p class="mt-1 text-sm font-semibold leading-snug text-slate-900">
+            2026년 첫 세번째 고객사까지<br/>
+            파격 혜택 제공
+          </p>
+          <p class="mt-2 text-xs text-slate-500">클릭해서 견적 요청하기</p>
+        </div>
+      </div>
+    </button>
+  </div>
+</aside>
+
+  <!-- Hero -->
+  <section id="home" class="relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 hero-bg"></div>
+    <div class="absolute inset-0 -z-10 opacity-[0.08] hero-grid"></div>
+  
+    <div class="mx-auto max-w-6xl px-4 py-20 md:py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+  
+        <div class="lg:col-span-12">
+          <div class="max-w-4xl">
+            <h1 class="mt-2 text-3xl md:text-5xl font-extrabold leading-tight tracking-tight text-brand-dark">
+              업무 시스템의 혁신 파트너,<br />
+              <span class="relative inline-block">
+                Buildvision
+                <span class="absolute left-0 right-0 -bottom-1 h-[10px] rounded-full bg-brand-accent/20"></span>
+              </span>
+              입니다.
+            </h1>
+  
+            <p class="mt-5 text-slate-700 leading-relaxed">
+              개발 경험 20년 이상의 경력을 발판으로 새로운 도약을 준비했습니다.
+            </p>
+  
+            <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_24px_rgba(2,6,23,0.06)]">
+              <p class="font-semibold text-slate-700 leading-relaxed">
+                AI 기반 개발로 생산성과 품질을 높이고, 합리적인 비용의 시스템을 구축해<br />
+                IT 전문가 지원과 지속적인 개선을 통해 업무 효율이 극대화될 때까지 함께합니다.
+              </p>
+            </div>
+  
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="rounded-full bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-bold text-brand-dark">
+                맞춤형 솔루션
+              </span>
+              <span class="rounded-full bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-bold text-brand-dark">
+                운영 안정화
+              </span>
+              <span class="rounded-full bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-bold text-brand-dark">
+                AI-ready 설계
+              </span>
+              <span class="rounded-full bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-bold text-brand-dark">
+                지속 개선
+              </span>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="mx-auto max-w-6xl px-4 py-14 md:py-16">
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-brand-dark">Services</h2>
+        <p class="mt-2 text-slate-600">개발부터 운영까지, “업무 효율”에 집중한 지원</p>
+      </div>
+    </div>
+
+    <div class="mt-10 grid gap-5">
+      <div class="service-row">
+        <div class="service-tag bg-sky-50 text-sky-700 border-sky-200">개발</div>
+        <div class="service-box border-sky-200">
+          <p class="service-summary">업무 환경에 맞춘 시스템 설계·구현</p>
+          <div class="service-chips">
+            <span class="service-chip">맞춤 개발</span>
+            <span class="service-chip">프로세스 개선</span>
+            <span class="service-chip">UI·UX</span>
+            <span class="service-chip">통합</span>
+            <span class="service-chip">성능</span>
+            <span class="service-chip">품질</span>
+            <span class="service-chip">확장성</span>
+            <span class="service-chip">표준화</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="service-row">
+        <div class="service-tag bg-amber-50 text-amber-700 border-amber-200">유지보수</div>
+        <div class="service-box border-amber-200">
+          <p class="service-summary">안정적 운영과 지속 개선 지원</p>
+          <div class="service-chips">
+            <span class="service-chip">운영 지원</span>
+            <span class="service-chip">안정화</span>
+            <span class="service-chip">이슈 대응</span>
+            <span class="service-chip">정기 점검</span>
+            <span class="service-chip">변경 관리</span>
+            <span class="service-chip">모니터링</span>
+            <span class="service-chip">개선</span>
+            <span class="service-chip">문서화</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="service-row">
+        <div class="service-tag bg-emerald-50 text-emerald-700 border-emerald-200">IT 전문가 지원</div>
+        <div class="service-box border-emerald-200">
+          <p class="service-summary">전담 파트너처럼 곁에서 기술 지원</p>
+          <div class="service-chips">
+            <span class="service-chip">기술 자문</span>
+            <span class="service-chip">상담</span>
+            <span class="service-chip">요구사항 정리</span>
+            <span class="service-chip">커뮤니케이션</span>
+            <span class="service-chip">가이드</span>
+            <span class="service-chip">교육</span>
+            <span class="service-chip">협업</span>
+            <span class="service-chip">리스크 관리</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="service-row">
+        <div class="service-tag bg-lime-50 text-lime-700 border-lime-200">AI-ready</div>
+        <div class="service-box border-lime-200">
+          <p class="service-summary">자동화·확장에 강한 구조 설계</p>
+          <div class="service-chips">
+            <span class="service-chip">AI 적용</span>
+            <span class="service-chip">자동화</span>
+            <span class="service-chip">데이터 기반</span>
+            <span class="service-chip">확장</span>
+            <span class="service-chip">보안</span>
+            <span class="service-chip">표준</span>
+            <span class="service-chip">유연성</span>
+            <span class="service-chip">유지 용이</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-14 h-px bg-slate-200"></div>
+  </section>
+
+  <!-- Why Buildvision -->
+   <section id="growth" class="mx-auto max-w-6xl px-4 py-14 md:py-16">
+  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-brand-dark">Why Buildvision</h2>
+      <p class="mt-2 text-slate-600">프로젝트 경험이 “표준”이 되고, 표준이 “성장”이 됩니다.</p>
+    </div>
+
+    <div class="flex gap-2">
+      <span class="badge badge-outline border-brand-dark/20 text-brand-dark font-bold">지속 개선</span>
+      <span class="badge badge-outline border-brand-dark/20 text-brand-dark font-bold">맞춤 설계</span>
+      <span class="badge badge-outline border-brand-dark/20 text-brand-dark font-bold">안정 운영</span>
+    </div>
+  </div>
+
+  <!-- Highlight Banner -->
+  <div class="mt-10 growth-highlight">
+    <div class="flex items-start gap-4">
+      <div class="growth-highlight-icon">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+      </div>
+
+      <div class="flex-1">
+        <p class="text-sm font-extrabold text-brand-dark">성장을 만드는 방식</p>
+        <h3 class="mt-1 text-xl md:text-2xl font-extrabold text-slate-900">
+          “빠르게 만드는 것”보다 “오래 가는 구조”를 먼저 설계합니다.
+        </h3>
+        <p class="mt-2 text-slate-600 leading-relaxed">
+          경험으로 쌓인 기준을 바탕으로 요구사항 분석 → 설계 → 구현 → 운영까지 일관된 품질로 이어지게 합니다.
+        </p>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          <span class="growth-pill"><i class="fa-solid fa-check"></i> 문제 해결 중심</span>
+          <span class="growth-pill"><i class="fa-solid fa-check"></i> 표준화된 개발</span>
+          <span class="growth-pill"><i class="fa-solid fa-check"></i> 운영까지 책임</span>
+        </div>
+      </div>
+
+      <div class="hidden lg:flex flex-col gap-2 min-w-[200px]">
+        <div class="kpi-tile">
+          <p class="kpi-title">품질</p>
+          <p class="kpi-value">UP</p>
+        </div>
+        <div class="kpi-tile">
+          <p class="kpi-title">효율</p>
+          <p class="kpi-value">UP</p>
+        </div>
+        <div class="kpi-tile">
+          <p class="kpi-title">신뢰</p>
+          <p class="kpi-value">UP</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <!-- 경험 -->
+    <article class="growth-card">
+      <div class="growth-card-head">
+        <div class="growth-card-icon bg-rose-50 text-rose-600 border-rose-200">
+          <i class="fa-solid fa-medal"></i>
+        </div>
+        <h4 class="growth-card-title">경험</h4>
+      </div>
+      <ul class="growth-list">
+        <li>다양한 프로젝트를 통해 쌓은 경험</li>
+        <li>실질적인 문제 해결 능력</li>
+        <li>신뢰성과 품질에 대한 자신감</li>
+      </ul>
+    </article>
+
+    <!-- 기술력 -->
+    <article class="growth-card">
+      <div class="growth-card-head">
+        <div class="growth-card-icon bg-amber-50 text-amber-700 border-amber-200">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <h4 class="growth-card-title">기술력</h4>
+      </div>
+      <ul class="growth-list">
+        <li>AI 트렌드와 도구를 적극 활용한 개발</li>
+        <li>고객 요구에 맞춘 맞춤형 솔루션 제공</li>
+        <li>클라우드/AI/데이터 기술의 적절한 적용</li>
+      </ul>
+    </article>
+
+    <!-- 협업 소통 -->
+    <article class="growth-card">
+      <div class="growth-card-head">
+        <div class="growth-card-icon bg-sky-50 text-sky-700 border-sky-200">
+          <i class="fa-solid fa-comments"></i>
+        </div>
+        <h4 class="growth-card-title">협업 소통</h4>
+      </div>
+      <ul class="growth-list">
+        <li>고객과의 원활한 커뮤니케이션</li>
+        <li>지속적인 피드백이 가능한 체계</li>
+        <li>요구사항 분석, 설계, 테스트, 개발까지 연결</li>
+      </ul>
+    </article>
+
+    <!-- 착한 비용 -->
+    <article class="growth-card">
+      <div class="growth-card-head">
+        <div class="growth-card-icon bg-emerald-50 text-emerald-700 border-emerald-200">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <h4 class="growth-card-title">착한 비용</h4>
+      </div>
+      <ul class="growth-list">
+        <li>투자 대비 높은 가치 추구</li>
+        <li>유연한 가격 정책</li>
+        <li>필요 기능 중심으로 합리적 범위 제안</li>
+      </ul>
+    </article>
+
+    <!-- 기술 지원 -->
+    <article class="growth-card">
+      <div class="growth-card-head">
+        <div class="growth-card-icon bg-violet-50 text-violet-700 border-violet-200">
+          <i class="fa-solid fa-life-ring"></i>
+        </div>
+        <h4 class="growth-card-title">기술 지원</h4>
+      </div>
+      <ul class="growth-list">
+        <li>시스템 개발 후에도 지속적인 기술 지원</li>
+        <li>유지보수 계약 체결 가능</li>
+        <li>긴급 대응 체계 구비</li>
+      </ul>
+    </article>
+  </div>
+  <div class="mt-14 h-px bg-slate-200"></div>
+</section>
+
+
+<!-- Collaboration -->
+<section id="team" class="mx-auto max-w-6xl px-4 py-14 md:py-16">
+  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-brand-dark">Collaboration</h2>
+      <p class="mt-2 text-slate-600">요구사항부터 운영까지, 역할과 책임이 명확해 프로젝트 진행이 효율적입니다.</p>
+    </div>
+  </div>
+
+  <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+    <!-- Left: Process -->
+    <div class="process-card">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900">진행 흐름</h3>
+          <p class="mt-1 text-slate-600">단계별 산출물을 기준으로 일정과 품질을 체계적으로 관리합니다.</p>
+        </div>
+        <div class="process-badge">
+          <i class="fa-solid fa-diagram-project"></i>
+        </div>
+      </div>
+
+      <div class="mt-6 grid gap-3">
+        <div class="process-step">
+          <div class="step-icon bg-sky-50 text-sky-700 border-sky-200"><i class="fa-solid fa-clipboard-list"></i></div>
+          <div class="step-body">
+            <p class="step-name">요구사항</p>
+            <p class="step-sub">현황/목표 정리 · 범위 확정 · 우선순위</p>
+          </div>
+          <span class="step-tag">Deliverable</span>
+        </div>
+
+        <div class="process-step">
+          <div class="step-icon bg-amber-50 text-amber-700 border-amber-200"><i class="fa-solid fa-pen-ruler"></i></div>
+          <div class="step-body">
+            <p class="step-name">설계</p>
+            <p class="step-sub">화면/데이터/권한 설계 · 개발 표준 정의</p>
+          </div>
+          <span class="step-tag">Spec</span>
+        </div>
+
+        <div class="process-step">
+          <div class="step-icon bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-code"></i>
+          </div>
+          <div class="step-body">
+            <p class="step-name">개발</p>
+            <p class="step-sub">구현 · 테스트 · 코드리뷰 · 품질 점검</p>
+          </div>
+          <span class="step-tag">Build</span>
+        </div>
+
+        <div class="process-step">
+          <div class="step-icon bg-violet-50 text-violet-700 border-violet-200"><i
+              class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="step-body">
+            <p class="step-name">운영</p>
+            <p class="step-sub">배포 · 모니터링 · 개선 · 유지보수</p>
+          </div>
+          <span class="step-tag">Run</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right: Tabs (Roles / Support) -->
+    <div class="tabs-card">
+      <div class="tabs-head">
+        <button type="button" class="tab-btn is-active" data-tab="roles">
+          <i class="fa-solid fa-users-gear"></i>
+          Roles
+        </button>
+        <button type="button" class="tab-btn" data-tab="support">
+          <i class="fa-solid fa-life-ring"></i>
+          Support
+        </button>
+      </div>
+    
+      <!-- Roles Panel -->
+      <div class="tab-panel is-active" data-panel="roles">
+        <h3 class="text-lg font-extrabold text-slate-900">팀 역할</h3>
+        <p class="mt-1 text-slate-600">업무별 담당자가 명확해 의사결정과 전달 과정이 단순화됩니다.</p>
+    
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="role-item">
+            <i class="fa-solid fa-code"></i>
+            <div>
+              <p class="role-title">개발1/2/3팀</p>
+              <p class="role-desc">기능 구현 · 통합 · 이슈 대응</p>
+            </div>
+          </div>
+    
+          <div class="role-item">
+            <i class="fa-solid fa-bullseye"></i>
+            <div>
+              <p class="role-title">기획마케팅실</p>
+              <p class="role-desc">요구사항 정리 · 커뮤니케이션 관리</p>
+            </div>
+          </div>
+    
+          <div class="role-item sm:col-span-2">
+            <i class="fa-solid fa-headset"></i>
+            <div>
+              <p class="role-title">SV 데스크</p>
+              <p class="role-desc">운영 지원 · 문의 응대</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Support Panel -->
+      <div class="tab-panel" data-panel="support">
+        <h3 class="text-lg font-extrabold text-slate-900">지원 방식</h3>
+        <p class="mt-1 text-slate-600">도입 이후에도 안정적으로 운영될 수 있도록 지속적으로 지원합니다.</p>
+    
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="support-tile">
+            <i class="fa-regular fa-clock"></i>
+            <div>
+              <p class="support-title">빠른 응답</p>
+              <p class="support-desc">업무 시간 내 우선 처리</p>
+            </div>
+          </div>
+    
+          <div class="support-tile">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+              <p class="support-title">안정성</p>
+              <p class="support-desc">리스크 최소화 & 품질 점검</p>
+            </div>
+          </div>
+    
+          <div class="support-tile">
+            <i class="fa-solid fa-rotate"></i>
+            <div>
+              <p class="support-title">지속 개선</p>
+              <p class="support-desc">정기 개선 제안(월 단위)</p>
+            </div>
+          </div>
+    
+          <div class="support-tile">
+            <i class="fa-solid fa-file-signature"></i>
+            <div>
+              <p class="support-title">유지보수 계약</p>
+              <p class="support-desc">운영 안정화까지 포함</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-14 h-px bg-slate-200"></div>
+</section>
+
+
+<!-- Contact -->
+<section id="contact" class="mx-auto max-w-6xl px-4 pt-14 md:pt-16 pb-24 md:pb-32">
+  <div class="contact-card">
+    <div class="contact-left">
+      <p class="contact-kicker">CONTACT US</p>
+      <h3 class="contact-title">업무 시스템 구축·개선, 상담부터 시작해보세요</h3>
+      <p class="contact-sub">
+        간단한 요구사항만 공유해주시면 범위와 일정, 구현 방향을 빠르게 정리해드립니다.
+      </p>
+
+      <div class="contact-actions">
+        <button id="openQuoteBtnContact" class="contact-btn-primary">
+          <i class="fa-regular fa-pen-to-square"></i>
+          무료 견적 요청
+        </button>
+
+        <a class="contact-btn-secondary" href="mailto:estelle0610@buildvision.co.kr">
+          <i class="fa-regular fa-envelope"></i>
+          메일로 문의
+        </a>
+      </div>
+
+      <!-- <div class="contact-note">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>정적 페이지 특성상 현재는 메일 전송 방식으로 접수됩니다. (추후 폼 연동 가능)</span>
+      </div> -->
+
+      <div class="contact-event">
+        <span class="event-pill"><i class="fa-solid fa-bullhorn"></i> EVENT</span>
+        <span class="event-text">리뉴얼 기념 선착순 고객사 혜택 제공 (상담 우선 배정 등)</span>
+      </div>
+    </div>
+
+    <div class="contact-right">
+      <div class="contact-info">
+        <div class="contact-info-item">
+          <div class="contact-info-icon"><i class="fa-regular fa-envelope"></i></div>
+          <div>
+            <p class="contact-info-label">Email</p>
+            <p class="contact-info-value">estelle0610@buildvision.co.kr</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-info-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+          <div>
+            <p class="contact-info-label">Phone</p>
+            <p class="contact-info-value">010-4164-5453 (기획마케팅 실장)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-mini">
+        <p class="contact-mini-title">응답 안내</p>
+        <p class="contact-mini-desc">접수 후 24시간 이내 담당자가 연락드립니다.</p>
+
+        <div class="contact-mini-grid">
+          <div class="mini-chip"><i class="fa-solid fa-check"></i> 요구사항 정리</div>
+          <div class="mini-chip"><i class="fa-solid fa-check"></i> 범위·일정 안내</div>
+          <div class="mini-chip"><i class="fa-solid fa-check"></i> 견적 제안</div>
+          <div class="mini-chip"><i class="fa-solid fa-check"></i> 다음 단계 안내</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-10 text-sm text-slate-500">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <p>© <span id="year"></span> Buildvision. All rights reserved.</p>
+        <div class="flex items-center gap-4">
+          <a class="hover:text-slate-700" href="#home">Home</a>
+          <a class="hover:text-slate-700" href="#services">Services</a>
+          <a class="hover:text-slate-700" href="#team">Collaboration</a>
+          <a class="hover:text-slate-700" href="#growth">Why Buildvision</a>
+          <a class="hover:text-slate-700" href="#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Quote Modal (Popup) -->
+  <dialog id="quoteModal" class="modal">
+    <div class="modal-box w-[min(900px,92vw)] p-0 bg-transparent shadow-none">
+      <div class="rounded-[36px] bg-white shadow-soft border border-slate-200 overflow-hidden">
+        <div class="flex items-start justify-between gap-4 p-7">
+          <div>
+            <h3 class="text-xl md:text-2xl font-extrabold text-slate-900">무료 견적 요청</h3>
+            <p class="mt-2 text-slate-600">
+              프로젝트 내용을 간단히 남겨주시면, 24시간 이내 담당자가 연락드립니다.
+            </p>
+          </div>
+          <button id="closeQuoteBtn"
+                  class="h-11 w-11 rounded-2xl hover:bg-slate-100 text-slate-500 flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <form id="quoteForm" class="px-7 pb-7 grid gap-4">
+          <label class="form-row">
+            <span class="form-label">회사명</span>
+            <input name="company" class="form-input" placeholder="예) 빌드비전" required />
+          </label>
+
+          <label class="form-row">
+            <span class="form-label">연락처</span>
+            <input name="phone" class="form-input" placeholder="예) 010-0000-0000" required />
+          </label>
+
+          <label class="form-row">
+            <span class="form-label">내용</span>
+            <textarea name="message" class="form-textarea" rows="5"
+                      placeholder="어떤 시스템 구축이 필요하신가요? (업무 흐름/문제/원하는 기능 등)" required></textarea>
+          </label>
+
+          <div class="pt-2">
+            <button type="submit"
+                    class="w-full rounded-2xl bg-brand-dark px-6 py-4 text-white font-extrabold text-lg hover:opacity-95">
+              문의 보내기
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button aria-label="close"></button>
+    </form>
+  </dialog>
+
+  <script src="./assets/js/main.js"></script>
+</body>
+</html>

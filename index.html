@@ -65,7 +65,7 @@
     <div class="mx-auto max-w-6xl px-4">
       <div class="flex items-center justify-between h-16">
         <a href="#home" class="flex items-center gap-3">
-          <!-- 로고 이미지 교체 -->
+          <!-- 로고 이미지 -->
           <img src="./assets/img/logo.png" alt="Buildvision" class="h-4 w-auto"
                onerror="this.style.display='none'">
         </a>
@@ -659,7 +659,7 @@
           <div>
             <h3 class="text-xl md:text-2xl font-extrabold text-slate-900">무료 견적 요청</h3>
             <p class="mt-2 text-slate-600">
-              프로젝트 내용을 간단히 남겨주시면, 24시간 이내 담당자가 연락드립니다.
+              프로젝트 내용을 간단히 남겨주시면, 영업일 기준 24시간 이내 담당자가 연락드립니다.
             </p>
           </div>
           <button id="closeQuoteBtn"
@@ -672,6 +672,11 @@
           <label class="form-row">
             <span class="form-label">회사명</span>
             <input name="company" class="form-input" placeholder="예) 빌드비전" required />
+          </label>
+
+          <label class="form-row">
+            <span class="form-label">담당자 성명</span>
+            <input name="contactPerson" class="form-input" placeholder="예) 홍길동" required />
           </label>
 
           <label class="form-row">

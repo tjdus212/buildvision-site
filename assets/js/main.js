@@ -45,30 +45,56 @@ function closeModal(modal) {
     });
   }
 
-  // Form submit (static: mailto)
+  // Form submit (StaticForms - keep modal)
+  /* 월 500통의 이메일까지 무료 */
   const form = $("#quoteForm");
+  const submitBtn = $("#quoteSubmitBtn");
+
   if (form) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const fd = new FormData(form);
-      const company = (fd.get("company") || "").toString().trim();
-      const phone = (fd.get("phone") || "").toString().trim();
-      const message = (fd.get("message") || "").toString().trim();
+      if (!form.reportValidity()) return;
 
-      if (!company || !phone || !message) {
-        alert("입력값을 확인해주세요.");
+      const action = form.getAttribute("action");
+      if (!action) {
+        alert("폼 action이 설정되지 않았어요.");
         return;
       }
 
-      const subject = encodeURIComponent(`[견적요청] ${company}`);
-      const body = encodeURIComponent(
-        `회사명: ${company}\n연락처: ${phone}\n\n요청 내용:\n${message}\n`
-      );
+      // 버튼 로딩 상태
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "전송 중...";
+      }
 
-      window.location.href = `mailto:estelle0610@buildvision.co.kr?subject=${subject}&body=${body}`;
-      form.reset();
-      closeModal(quoteModal);
+      try {
+        const fd = new FormData(form);
+
+        // replyTo 설정 -> input 추가
+        // fd.set("replyTo", "someone@example.com");
+
+        const res = await fetch(action, {
+          method: "POST",
+          body: fd,
+          headers: { "Accept": "application/json" },
+        });
+
+        if (res.ok) {
+          alert("접수 완료! 영업일 기준 24시간 이내 연락드릴게요.");
+          form.reset();
+          closeModal(quoteModal);
+        } else {
+          alert("전송에 실패했어요. 잠시 후 다시 시도해주세요.");
+        }
+      } catch (err) {
+        alert("네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.");
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "문의 보내기";
+        }
+      }
     });
   }
 

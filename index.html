@@ -96,8 +96,8 @@
         <div class="grid gap-2">
           <a class="nav-link" href="#home">Home</a>
           <a class="nav-link" href="#services">Services</a>
-          <a class="nav-link" href="#team">Collaboration</a>
-          <a class="nav-link" href="#growth">Capabilities</a>
+          <a class="nav-link" href="#team">Capabilities</a>
+          <a class="nav-link" href="#growth">Collaboration</a>
           <a class="nav-link" href="#contact">Contact</a>
           <button id="openQuoteBtnMobile"
                   class="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-2 text-white font-semibold">
@@ -128,7 +128,7 @@
 
       <div id="eventContent" class="flex items-start gap-3 pr-10">
         <div class="mt-1 h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-dark to-brand-light text-white flex items-center justify-center">
-          <i class="fa-solid fa-gift"></i> <!-- gift / ticket / tags / bolt / percent -->
+          <i class="fa-solid fa-bolt"></i> 
         </div>
 
         <div class="flex-1">
@@ -583,7 +583,7 @@
           무료 견적 요청
         </button>
 
-        <a class="contact-btn-secondary" href="mailto:estelle0610@buildvision.co.kr">
+        <a class="contact-btn-secondary" href="mailto:estelleyun@buildvision.co.kr">
           <i class="fa-regular fa-envelope"></i>
           메일로 문의
         </a>
@@ -606,7 +606,7 @@
           <div class="contact-info-icon"><i class="fa-regular fa-envelope"></i></div>
           <div>
             <p class="contact-info-label">Email</p>
-            <p class="contact-info-value">estelle0610@buildvision.co.kr</p>
+            <p class="contact-info-value">estelleyun@buildvision.co.kr</p>
           </div>
         </div>
 
@@ -668,31 +668,38 @@
           </button>
         </div>
 
-        <form id="quoteForm" class="px-7 pb-7 grid gap-4">
+        <form id="quoteForm" class="px-7 pb-7 grid gap-4" action="https://api.staticforms.xyz/submit" method="POST">
+        
+          <input type="hidden" name="accessKey" value="sf_7a6k8j4e61ickade1e72bi28">
+          <input type="hidden" name="to" value="estelleyun@buildvision.co.kr">
+          <input type="hidden" name="subject" value="[Buildvision] 견적 요청/문의">
+          <input type="hidden" name="replyTo" value="">
+          <input type="text" name="honeypot" style="display:none">
+        
           <label class="form-row">
             <span class="form-label">회사명</span>
             <input name="company" class="form-input" placeholder="예) 빌드비전" required />
           </label>
-
+        
           <label class="form-row">
             <span class="form-label">담당자 성명</span>
             <input name="contactPerson" class="form-input" placeholder="예) 홍길동" required />
           </label>
-
+        
           <label class="form-row">
             <span class="form-label">연락처</span>
             <input name="phone" class="form-input" placeholder="예) 010-0000-0000" required />
           </label>
-
+        
           <label class="form-row">
             <span class="form-label">내용</span>
             <textarea name="message" class="form-textarea" rows="5"
-                      placeholder="어떤 시스템 구축이 필요하신가요? (업무 흐름/문제/원하는 기능 등)" required></textarea>
+              placeholder="어떤 시스템 구축이 필요하신가요? (업무 흐름/문제/원하는 기능 등)"></textarea>
           </label>
-
+        
           <div class="pt-2">
-            <button type="submit"
-                    class="w-full rounded-2xl bg-brand-dark px-6 py-4 text-white font-extrabold text-lg hover:opacity-95">
+            <button id="quoteSubmitBtn" type="submit"
+              class="w-full rounded-2xl bg-brand-dark px-6 py-4 text-white font-extrabold text-lg hover:opacity-95">
               문의 보내기
             </button>
           </div>
